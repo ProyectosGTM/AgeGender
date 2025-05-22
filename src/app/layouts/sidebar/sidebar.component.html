@@ -1,0 +1,124 @@
+<!-- ========== Left Sidebar Start ========== -->
+
+<div class="vertical-menu">
+
+  <!-- LOGO -->
+  <div class="navbar-brand-box">
+    <a [routerLink]="['/']" class="logo logo-dark">
+      <span class="logo-sm">
+        <img src="assets/images/logo-sm.png" alt="" height="22">
+      </span>
+      <span class="logo-lg">
+        <img src="assets/images/logo-dark.png" alt="" height="20">
+      </span>
+    </a>
+
+    <a [routerLink]="['/']" class="logo logo-light">
+      <span class="logo-sm">
+        <img src="assets/images/logo-sm.png" alt="" height="22">
+      </span>
+      <span class="logo-lg">
+        <img src="assets/images/logo-light.png" alt="" height="20">
+      </span>
+    </a>
+  </div>
+  <button type="button" class="btn btn-sm px-3 font-size-16 header-item waves-effect vertical-menu-btn" (click)="toggleMobileMenu($event)">
+    <i class="fa fa-fw fa-bars"></i>
+  </button>
+  @if(isCondensed){
+  <ngx-simplebar class="sidebar-menu-scroll" #componentRef>
+    <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+  </ngx-simplebar>}@else{
+  <ngx-simplebar class="sidebar-menu-scroll" #componentRef>
+    <ng-container *ngTemplateOutlet="contentTemplate"></ng-container>
+  </ngx-simplebar>}
+
+</div>
+
+<ng-template #contentTemplate>
+
+  <!--- Sidemenu -->
+  <div id="sidebar-menu">
+    <!-- Left Menu Start -->
+    <ul class="metismenu list-unstyled" id="side-menu" #sideMenu>
+      @for (item of menuItems; track $index) {
+      <ng-container>
+        @if(item.isTitle){
+        <li class="menu-title">{{ item.label | translate}}</li>}
+        <!-- Layouts menu -->
+        @if (item.isLayout) {
+        <li>
+          <a href="javascript: void(0);" class="has-arrow">
+            <i class="uil-window-section"></i>
+            <span> {{'MENUITEMS.LAYOUTS.TEXT' | translate}}</span>
+          </a>
+          <ul class="sub-menu" aria-expanded="false">
+            <li><a (click)="changeLayout('horizontal')" href="javascript: void(0);"> {{
+                'MENUITEMS.LAYOUTS.LIST.HORIZONTAL' | translate}} </a></li>
+            <li><a (click)="darkSidebar()" href="javascript: void(0);">{{ 'MENUITEMS.LAYOUTS.LIST.DARKSIDEBAR' |
+                translate }} </a></li>
+            <li><a (click)="compactSidebar()" href="javascript: void(0);">{{ 'MENUITEMS.LAYOUTS.LIST.COMPACTSIDEBAR' |
+                translate}} </a></li>
+            <li><a (click)="iconSidebar()" href="javascript: void(0);">{{ 'MENUITEMS.LAYOUTS.LIST.ICONSIDEBAR' |
+                translate }} </a></li>
+            <li><a (click)="boxedLayout()" href="javascript: void(0);">{{ 'MENUITEMS.LAYOUTS.LIST.BOXEDWITH' | translate
+                }} </a></li>
+            <li><a (click)="coloredSidebar()" href="javascript: void(0);">{{ 'MENUITEMS.LAYOUTS.LIST.COLOREDSIDEBAR' |
+                translate}} </a></li>
+          </ul>
+        </li>
+        }
+        <!-- end Layout menu -->
+        @if(!item.isTitle && !item.isLayout){
+        <li>
+          @if(hasItems(item)){
+          <a href="javascript:void(0);" class="is-parent" [ngClass]="{'has-arrow': !item.badge, 'has-dropdown': item.badge}">
+            @if(item.icon){
+            <i class="bx {{item.icon}}"></i>}
+            <span> {{ item.label | translate}}</span>
+            @if(item.badge){
+            <span class="badge rounded-pill bg-{{item.badge.variant}} float-end">{{item.badge.text |
+              translate}}</span>}
+          </a>}@else{
+          <a [routerLink]="item.link" class="side-nav-link-ref" routerLinkActive="active">
+            @if(item.icon){
+            <i class="bx {{ item.icon }}"></i>
+            }
+            <span> {{ item.label | translate}}</span>
+            @if(item.badge){
+            <span class="badge rounded-pill bg-{{item.badge.variant}} float-end">{{item.badge.text |
+              translate}}</span>
+            }
+          </a>
+          }
+          @if(hasItems(item)){
+          <ul class="sub-menu" aria-expanded="false">
+            <li *ngFor="let subitem of item.subItems">
+
+              @if(hasItems(subitem)){
+              <a class="side-nav-link-a-ref has-arrow" href="javascript:void(0);" [attr.data-parent]="subitem.parentId">
+                {{ subitem.label | translate}}
+              </a>
+              <ul class="sub-menu mm-collapse" aria-expanded="false">
+                @for (subSubitem of subitem.subItems; track $index) {
+                <li>
+                  <a [attr.data-parent]="subSubitem.parentId" [routerLink]="subSubitem.link" routerLinkActive="active" class="side-nav-link-ref">
+                    {{ subSubitem.label | translate }}
+                  </a>
+                </li>}
+              </ul>}
+              @else { <a [routerLink]="subitem.link" class="side-nav-link-ref" [attr.data-parent]="subitem.parentId" routerLinkActive="active">
+                {{ subitem.label | translate}}
+              </a>}
+            </li>
+          </ul>
+          }
+        </li>}
+      </ng-container>
+      }
+    </ul>
+  </div>
+</ng-template>
+<!-- Sidebar -->
+
+<!-- Left Sidebar End -->

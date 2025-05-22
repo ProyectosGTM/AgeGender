@@ -1,0 +1,12 @@
+::ng-deep .dx-datagrid .dx-row>td {
+    padding: 16px 16px;
+    font-size: 18px;
+    line-height: 20px;
+}
+
+::ng-deep .dx-datagrid-headers .dx-datagrid-table .dx-row>td {
+    border-bottom: 1px solid #515159;
+    line-height: 16px;
+    font-weight: 500;
+    font-size: 18px;
+}
