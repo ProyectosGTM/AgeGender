@@ -76,7 +76,7 @@
             <div class="col-12 col-sm-12 col-lg-12 mb-3">
               <h1 class="text-white fs-4 m-0">Registro de Incidencias</h1>
               <dx-data-grid id="gridContainer" [columnHidingEnabled]="true" [showBorders]="true"
-                [showColumnLines]="true" [showRowLines]="true" [rowAlternationEnabled]="true"
+                [showColumnLines]="true" [showRowLines]="true" [rowAlternationEnabled]="true" (onOptionChanged)="manejarCambioOpciones($event)"
                 [dataSource]="informacionGrid" [keyExpr]="'id'" [width]="'100%'" [groupPanel]="{ visible: true }">
                 <dxo-search-panel [visible]="true" [width]="200" placeholder="Buscar..."></dxo-search-panel>
                 <dxo-paging [pageSize]="20"></dxo-paging>
@@ -86,18 +86,17 @@
                 <dxo-filter-row [visible]="showFilterRow"></dxo-filter-row>
                 <dxo-header-filter [visible]="showHeaderFilter"></dxo-header-filter>
                 <dxo-grouping [autoExpandAll]="true"></dxo-grouping>
-                <dxi-column dataField="genero" caption="Genero" alignment="center"
-                  [calculateCellValue]="capitalizarGenero"></dxi-column>
                 <dxi-column dataField="edad" caption="Edad" alignment="center"></dxi-column>
                 <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center" cellTemplate="estAnim">
                   <div *dxTemplate="let t of 'estAnim' ">
                     {{t.data.estadoAnimo | titlecase}}
                   </div>
                 </dxi-column>
+                <dxi-column dataField="genero" caption="Genero" alignment="center" [calculateCellValue]="capitalizarGenero"></dxi-column>
                 <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center"
                   [calculateCellValue]="formatearFecha"></dxi-column>
                 <dxo-summary>
-                  <dxi-total-item column="genero" summaryType="count" displayFormat="Total: {0}">
+                  <dxi-total-item column="genero" summaryType="count" displayFormat="Total: {0}" cssClass="large-total-text">
                   </dxi-total-item>
                 </dxo-summary>
                 <dxo-summary>

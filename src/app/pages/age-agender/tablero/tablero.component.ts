@@ -39,6 +39,15 @@ export class TableroComponent implements OnInit {
     this.obtenerDatos()
   }
 
+  manejarCambioOpciones(e: any) {
+    if (e.name === 'columns' && e.fullName?.includes('groupIndex')) {
+      setTimeout(() => {
+        e.component.option('grouping.autoExpandAll', false);
+      });
+    }
+  }
+
+
   obtenerDatos() {
     this.genService.obtenerGender().subscribe((response) => {
       const hombres = response.filter((item: any) => item.genero.toLowerCase() === 'hombre');
@@ -59,7 +68,7 @@ export class TableroComponent implements OnInit {
         }
       ];
 
-    
+
       const grupo_0_20_m = mujeres.filter((item: any) => item.edad >= 0 && item.edad <= 20).length;
       const grupo_21_40_m = mujeres.filter((item: any) => item.edad >= 21 && item.edad <= 40).length;
       const grupo_41_60_m = mujeres.filter((item: any) => item.edad >= 41 && item.edad <= 60).length;
@@ -72,7 +81,7 @@ export class TableroComponent implements OnInit {
         { etiqueta: '61+', value: grupo_61_mas_m, color: 4 }
       ];
 
-    
+
       const grupo_0_20_h = hombres.filter((item: any) => item.edad >= 0 && item.edad <= 20).length;
       const grupo_21_40_h = hombres.filter((item: any) => item.edad >= 21 && item.edad <= 40).length;
       const grupo_41_60_h = hombres.filter((item: any) => item.edad >= 41 && item.edad <= 60).length;
@@ -85,7 +94,7 @@ export class TableroComponent implements OnInit {
         { etiqueta: '61+', value: grupo_61_mas_h, color: 4 }
       ];
 
-    
+
       this.edadesAgrupadas = [
         { etiqueta: '0 - 20', value: grupo_0_20_h + grupo_0_20_m, color: 1 },
         { etiqueta: '21 - 40', value: grupo_21_40_h + grupo_21_40_m, color: 2 },
@@ -93,7 +102,7 @@ export class TableroComponent implements OnInit {
         { etiqueta: '61+', value: grupo_61_mas_h + grupo_61_mas_m, color: 4 }
       ];
 
-    
+
       this.totalHombres = hombres.length;
       this.totalMujeres = mujeres.length;
       this.totalGeneral = response.length;
@@ -119,7 +128,7 @@ export class TableroComponent implements OnInit {
       1: '#8e44ad',
       2: '#f39c12',
       3: '#16a085',
-      4: '#c0392b' 
+      4: '#c0392b'
     };
 
     return {
@@ -142,7 +151,7 @@ export class TableroComponent implements OnInit {
       1: '#ff69b4',
       2: '#f06292',
       3: '#ec407a',
-      4: '#c2185b' 
+      4: '#c2185b'
     };
     return {
       color: colorMap[point.data.color] || '#e1bee7'
@@ -161,7 +170,7 @@ export class TableroComponent implements OnInit {
       1: '#0d6efd',
       2: '#3b8beb',
       3: '#5caeff',
-      4: '#b6d4fe' 
+      4: '#b6d4fe'
     };
     return {
       color: colorMap[point.data.color] || '#cfd8dc'
