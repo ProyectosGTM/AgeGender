@@ -20,7 +20,7 @@
                   </dxo-title>
                   <dxo-export [enabled]="true"></dxo-export>
                   <dxo-legend [margin]="0" horizontalAlignment="center" verticalAlignment="bottom"></dxo-legend>
-                  <dxi-series argumentField="etiqueta" valueField="value"> <!-- 👈 agregado -->
+                  <dxi-series argumentField="etiqueta" valueField="value"> <!-- agregado -->
                   </dxi-series>
                   <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeTooltip">
                   </dxo-tooltip>
@@ -94,9 +94,9 @@
                 <dxo-grouping [autoExpandAll]="true"></dxo-grouping>
                 <dxi-column dataField="genero" caption="Genero" alignment="center"
                   [calculateCellValue]="capitalizarGenero"></dxi-column>
-                <dxi-column dataField="edad" caption="Edad" alignment="center"></dxi-column>
+                <dxi-column dataField="edad" caption="Edad" alignment="center"></dxi-column>                
+                <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center"></dxi-column>
                 <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center" [calculateCellValue]="formatearFecha"></dxi-column>
-                <dxi-column dataField="estadoAnimo" caption="Estado Ánimo" alignment="center"></dxi-column>
                   <dxo-summary>
                     <dxi-total-item column="genero" summaryType="count" displayFormat="Total Personas: {0}">
                     </dxi-total-item>
