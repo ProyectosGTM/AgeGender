@@ -86,6 +86,7 @@
                 <dxo-filter-row [visible]="showFilterRow"></dxo-filter-row>
                 <dxo-header-filter [visible]="showHeaderFilter"></dxo-header-filter>
                 <dxo-grouping [autoExpandAll]="true"></dxo-grouping>
+                <dxi-column dataField="id" caption="Id" alignment="center" [width]="200" ></dxi-column>
                 <dxi-column dataField="genero" caption="Genero" alignment="center" [calculateCellValue]="capitalizarGenero"></dxi-column>
                 <dxi-column dataField="edad" caption="Edad" alignment="center"></dxi-column>
                 <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center" cellTemplate="estAnim">
@@ -96,11 +97,14 @@
                 <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center"
                   [calculateCellValue]="formatearFecha"></dxi-column>
                 <dxo-summary>
-                  <dxi-total-item column="genero" summaryType="count" displayFormat="Total: {0}" cssClass="large-total-text">
+                  <dxi-total-item column="id" summaryType="count" displayFormat="Total: {0}" cssClass="large-total-text">
                   </dxi-total-item>
                 </dxo-summary>
                 <dxo-summary>
-                  <dxi-group-item column="genero" summaryType="count" displayFormat="Total: {0}">
+                  <dxi-group-item column="id" summaryType="count" displayFormat="Total: {0}">
+                  </dxi-group-item>
+                  <dxi-group-item column="id" summaryType="count" displayFormat="Total: {0}"
+                    [showInGroupFooter]="true">
                   </dxi-group-item>
                 </dxo-summary>
                 <dxo-export [enabled]="false" [allowExportSelectedData]="true"
