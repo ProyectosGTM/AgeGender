@@ -1,10 +1,9 @@
 <div class="container-fluid px-4 py-3">
 
   <div class="d-flex justify-content-between align-items-center mb-4">
-  <h2 class="m-0">Tablero de Incidencias</h2>
-  <img src="./assets/images/tecsa.png" alt="Logo" style="height: 40px;">
-</div>
-
+    <h2 class="m-0">Tablero de Incidencias</h2>
+    <img src="./assets/images/tecsa.png" alt="Logo" style="height: 40px;">
+  </div>
 
   <div class="row mt-2">
     <div class="col-lg-12">
@@ -13,14 +12,14 @@
           <div class="row text-center">
             <div class="col-12 col-sm-6 col-lg-3 mb-3">
               <div class="bg-dark rounded p-4 shadow-sm">
-                <dx-pie-chart id="pie" type="doughnut" palette="Soft Pastel"
-                  [dataSource]="informacion" [customizePoint]="customizePoint">
+                <dx-pie-chart id="pie" type="doughnut" palette="Soft Pastel" [dataSource]="informacion"
+                  [customizePoint]="customizePoint" class="grafico-mini">
                   <dxo-title text="Conteo de Hits">
                     <dxo-subtitle text="Personas: {{totalGeneral}}"></dxo-subtitle>
                   </dxo-title>
                   <dxo-export [enabled]="true"></dxo-export>
                   <dxo-legend [margin]="0" horizontalAlignment="center" verticalAlignment="bottom"></dxo-legend>
-                  <dxi-series argumentField="etiqueta" valueField="value"> <!-- agregado -->
+                  <dxi-series argumentField="etiqueta" valueField="value">
                   </dxi-series>
                   <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeTooltip">
                   </dxo-tooltip>
@@ -29,8 +28,8 @@
             </div>
             <div class="col-12 col-sm-6 col-lg-3 mb-3">
               <div class="bg-dark rounded p-4 shadow-sm">
-                <dx-pie-chart type="doughnut" palette="Soft Pastel"
-                  [dataSource]="edadesAgrupadas" [customizePoint]="customizeEdadPoint">
+                <dx-pie-chart type="doughnut" palette="Soft Pastel" [dataSource]="edadesAgrupadas"
+                  [customizePoint]="customizeEdadPoint" class="grafico-mini">
                   <dxo-title text="Conteo de Edades Ambos Géneros">
                     <dxo-subtitle text="Personas: {{totalGeneral}}"></dxo-subtitle>
                   </dxo-title>
@@ -43,47 +42,42 @@
             </div>
             <div class="col-12 col-sm-6 col-lg-3 mb-3">
               <div class="bg-dark rounded p-4 shadow-sm">
-                <dx-pie-chart type="doughnut" palette="Soft Pastel"
-                  [dataSource]="edadesMujeres" [customizePoint]="customizeEdadMujeresPoint">
+                <dx-pie-chart type="doughnut" palette="Soft Pastel" [dataSource]="edadesMujeres"
+                  [customizePoint]="customizeEdadMujeresPoint" class="grafico-mini">
                   <dxo-title text="Segmentación por Edades">
                     <dxo-subtitle text="Mujeres: {{totalMujeres}}"></dxo-subtitle>
                   </dxo-title>
                   <dxo-export [enabled]="true"></dxo-export>
                   <dxo-legend [margin]="0" horizontalAlignment="center" verticalAlignment="bottom"></dxo-legend>
-
                   <dxi-series argumentField="etiqueta" valueField="value"></dxi-series>
-
                   <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeEdadMujeresTooltip">
                   </dxo-tooltip>
                 </dx-pie-chart>
-
               </div>
             </div>
             <div class="col-12 col-sm-6 col-lg-3 mb-3">
               <div class="bg-dark rounded p-4 shadow-sm">
-                <dx-pie-chart type="doughnut" palette="Soft Pastel"
-                  [dataSource]="edadesHombres" [customizePoint]="customizeEdadHombresPoint">
+                <dx-pie-chart type="doughnut" palette="Soft Pastel" [dataSource]="edadesHombres"
+                  [customizePoint]="customizeEdadHombresPoint" class="grafico-mini">
                   <dxo-title text="Segmentación por Edades">
                     <dxo-subtitle text="Hombres: {{totalHombres}}"></dxo-subtitle>
                   </dxo-title>
                   <dxo-export [enabled]="true"></dxo-export>
                   <dxo-legend [margin]="0" horizontalAlignment="center" verticalAlignment="bottom"></dxo-legend>
-
                   <dxi-series argumentField="etiqueta" valueField="value"></dxi-series>
-
                   <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeEdadHombresTooltip">
                   </dxo-tooltip>
                 </dx-pie-chart>
-
               </div>
             </div>
           </div>
+
           <div class="row text-left mt-5">
             <div class="col-12 col-sm-12 col-lg-12 mb-3">
               <h1 class="text-white fs-4 m-0">Registro de Incidencias</h1>
               <dx-data-grid id="gridContainer" [columnHidingEnabled]="true" [showBorders]="true"
                 [showColumnLines]="true" [showRowLines]="true" [rowAlternationEnabled]="true"
-                [dataSource]="informacionGrid" [keyExpr]="'id'" [width]="'100%'">
+                [dataSource]="informacionGrid" [keyExpr]="'id'" [width]="'100%'" [groupPanel]="{ visible: true }">
                 <dxo-search-panel [visible]="true" [width]="200" placeholder="Buscar..."></dxo-search-panel>
                 <dxo-paging [pageSize]="20"></dxo-paging>
                 <dxo-pager [showPageSizeSelector]="true" [allowedPageSizes]="[20, 50, 100, 200]"
@@ -91,19 +85,27 @@
                 <dxo-group-panel [emptyPanelText]="mensajeAgrupar" [visible]="true"></dxo-group-panel>
                 <dxo-filter-row [visible]="showFilterRow"></dxo-filter-row>
                 <dxo-header-filter [visible]="showHeaderFilter"></dxo-header-filter>
-                <dxo-grouping [autoExpandAll]="true"></dxo-grouping>
-                <dxi-column dataField="genero" caption="Genero" alignment="center"
+                <dxo-grouping [autoExpandAll]="false"></dxo-grouping>
+                <dxi-column dataField="genero" [groupIndex]="0" caption="Genero" alignment="center"
                   [calculateCellValue]="capitalizarGenero"></dxi-column>
-                <dxi-column dataField="edad" caption="Edad" alignment="center"></dxi-column>                
-                <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center"></dxi-column>
-                <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center" [calculateCellValue]="formatearFecha"></dxi-column>
-                  <dxo-summary>
-                    <dxi-total-item column="genero" summaryType="count" displayFormat="Total Personas: {0}">
-                    </dxi-total-item>
-                  </dxo-summary>
-
+                <dxi-column dataField="edad" caption="Edad" alignment="center"></dxi-column>
+                <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center" cellTemplate="estAnim">
+                  <div *dxTemplate="let t of 'estAnim' ">
+                    {{t.data.estadoAnimo | titlecase}}
+                  </div>
+                </dxi-column>
+                <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center"
+                  [calculateCellValue]="formatearFecha"></dxi-column>
+                <dxo-summary>
+                  <dxi-total-item column="genero" summaryType="count" displayFormat="Total: {0}">
+                  </dxi-total-item>
+                </dxo-summary>
+                <dxo-summary>
+                  <dxi-group-item column="genero" summaryType="count" displayFormat="Total: {0}">
+                  </dxi-group-item>
+                </dxo-summary>
                 <dxo-export [enabled]="false" [allowExportSelectedData]="true"
-                  [texts]="{ exportAll: 'Exportar todos los datos a Excel', exportSelectedRows: 'Exportar filas seleccionadas a Excel' }">
+                  [texts]="{ exportAll: 'Exportar todos los datos a Excel'}">
                 </dxo-export>
               </dx-data-grid>
             </div>
