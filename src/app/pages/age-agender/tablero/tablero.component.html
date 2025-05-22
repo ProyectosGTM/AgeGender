@@ -86,13 +86,13 @@
                 <dxo-filter-row [visible]="showFilterRow"></dxo-filter-row>
                 <dxo-header-filter [visible]="showHeaderFilter"></dxo-header-filter>
                 <dxo-grouping [autoExpandAll]="true"></dxo-grouping>
+                <dxi-column dataField="genero" caption="Genero" alignment="center" [calculateCellValue]="capitalizarGenero"></dxi-column>
                 <dxi-column dataField="edad" caption="Edad" alignment="center"></dxi-column>
                 <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center" cellTemplate="estAnim">
                   <div *dxTemplate="let t of 'estAnim' ">
                     {{t.data.estadoAnimo | titlecase}}
                   </div>
                 </dxi-column>
-                <dxi-column dataField="genero" caption="Genero" alignment="center" [calculateCellValue]="capitalizarGenero"></dxi-column>
                 <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center"
                   [calculateCellValue]="formatearFecha"></dxi-column>
                 <dxo-summary>
