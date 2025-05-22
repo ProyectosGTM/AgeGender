@@ -12,7 +12,7 @@ const routes: Routes = [
   { path: 'chat', component: ChatComponent },
   { path:'file-manager',component:FileManagerComponent},
 
-  { path: 'age-agender', loadChildren: () => import('./age-agender/age-agender.module').then(m => m.AgeAgenderModule) }, // ✅
+  { path: 'age-gender', loadChildren: () => import('./age-agender/age-agender.module').then(m => m.AgeAgenderModule) }, // ✅
 
 
   { path: 'dashboards', loadChildren: () => import('./dashboards/dashboards.module').then(m => m.DashboardsModule) },

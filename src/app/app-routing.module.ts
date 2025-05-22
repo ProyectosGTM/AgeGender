@@ -4,8 +4,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
 import { LayoutComponent } from './layouts/layout.component';
 const routes: Routes = [
-  // 👇 Redirecciona desde raíz al módulo age-agender (dentro de pages)
-  { path: '', redirectTo: 'age-agender', pathMatch: 'full' },
+  { path: '', redirectTo: 'age-gender', pathMatch: 'full' },
 
   { path: 'account', loadChildren: () => import('./account/account.module').then(m => m.AccountModule) },
 
