@@ -61,6 +61,9 @@ export class TableroComponent implements OnInit {
   }
 
   actualizarDistribucionPorHora() {
+
+    this.fechaSeleccionadaTexto = this.formatearFechaTexto(this.fechaSeleccionada);
+    
     const fechaFormateada = this.formatearPorFecha(this.fechaSeleccionada);
 
     this.genService.obtenerDistribucionPorDia(fechaFormateada).subscribe((data) => {
