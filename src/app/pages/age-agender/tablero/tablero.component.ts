@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { MedalsInfo, Service } from './app.service';
 import { AgeGenderService } from '../services/agegender.service';
+import Swal from 'sweetalert2';
+import { fadeInUpAnimation } from 'src/app/core/animations/fade-in-up.animation';
 
 @Component({
   selector: 'app-tablero',
   templateUrl: './tablero.component.html',
   styleUrl: './tablero.component.scss',
   providers: [Service],
+  animations: [fadeInUpAnimation]
 })
 export class TableroComponent implements OnInit {
   olympicMedals: MedalsInfo[];
@@ -24,6 +27,13 @@ export class TableroComponent implements OnInit {
   public mensajeAgrupar: string = "Arrastre un encabezado de columna aquí para agrupar por esa columna"
   public loading: boolean = false;
   public loadingMessage: string = 'Cargando...';
+  public distribucionPorHora: any;
+  public fechaSeleccionada: string = this.formatearFechaLocal(new Date());
+  public fechaInicio: Date = new Date();
+  public fechaFin: Date = new Date();
+  public resultadoRango: any;
+  public buttonInfo: boolean = false;
+  public buttonsFecha: boolean = true;
 
   constructor(service: Service, private genService: AgeGenderService) {
     this.olympicMedals = service.getMedalsData();
@@ -37,6 +47,7 @@ export class TableroComponent implements OnInit {
 
   ngOnInit(): void {
     this.obtenerDatos()
+    this.actualizarDistribucionPorHora();
   }
 
   manejarCambioOpciones(e: any) {
@@ -47,9 +58,21 @@ export class TableroComponent implements OnInit {
     }
   }
 
+  actualizarDistribucionPorHora() {
+    this.genService.obtenerDistribucionPorDia(this.fechaSeleccionada).subscribe((data) => {
+      this.distribucionPorHora = data.filter((item: any) => {
+        const hora = parseInt(item.hora.split(':')[0], 10);
+        return hora >= 8;
+      });
+    });
+  }
 
   obtenerDatos() {
+    this.buttonsFecha = true;
+    this.buttonInfo = false;
+    this.loading = true;
     this.genService.obtenerGender().subscribe((response) => {
+      this.loading = false;
       const hombres = response.filter((item: any) => item.genero.toLowerCase() === 'hombre');
       const mujeres = response.filter((item: any) => item.genero.toLowerCase() === 'mujer');
 
@@ -67,7 +90,6 @@ export class TableroComponent implements OnInit {
           colors: 1,
         }
       ];
-
 
       const grupo_0_20_m = mujeres.filter((item: any) => item.edad >= 0 && item.edad <= 20).length;
       const grupo_21_40_m = mujeres.filter((item: any) => item.edad >= 21 && item.edad <= 40).length;
@@ -106,9 +128,95 @@ export class TableroComponent implements OnInit {
       this.totalHombres = hombres.length;
       this.totalMujeres = mujeres.length;
       this.totalGeneral = response.length;
+    }, error => {
+      this.loading = false;
+       Swal.fire({
+        icon: 'error',
+        title: '¡Ops!',
+        text: error
+      });
     });
   }
 
+  consultarPorRango() {
+    this.loading = true;
+    const inicio = this.formatearPorFecha(this.fechaInicio);
+    const fin = this.formatearPorFecha(this.fechaFin);
+
+    this.genService.obtenerGenderPorRango(inicio, fin).subscribe(response => {
+
+      if (!response || response.length === 0) {
+        this.loading = false;
+        this.buttonInfo = true;
+        this.buttonsFecha = false;
+        Swal.fire({
+          icon: 'info',
+          title: 'Sin Resultados',
+          text: 'No se encontraron registros con el rango de fechas seleccionado.'
+        });
+      }
+
+      const hombres = response.filter((item: any) => item.genero.toLowerCase() === 'hombre');
+      const mujeres = response.filter((item: any) => item.genero.toLowerCase() === 'mujer');
+
+      this.informacionGrid = response;
+
+      this.informacion = [
+        {
+          etiqueta: 'Hombres',
+          value: hombres.length,
+          colors: 2
+        },
+        {
+          etiqueta: 'Mujeres',
+          value: mujeres.length,
+          colors: 1,
+        }
+      ];
+
+      const grupo_0_20_m = mujeres.filter((item: any) => item.edad >= 0 && item.edad <= 20).length;
+      const grupo_21_40_m = mujeres.filter((item: any) => item.edad >= 21 && item.edad <= 40).length;
+      const grupo_41_60_m = mujeres.filter((item: any) => item.edad >= 41 && item.edad <= 60).length;
+      const grupo_61_mas_m = mujeres.filter((item: any) => item.edad >= 61).length;
+
+      this.edadesMujeres = [
+        { etiqueta: '0 - 20', value: grupo_0_20_m, color: 1 },
+        { etiqueta: '21 - 40', value: grupo_21_40_m, color: 2 },
+        { etiqueta: '41 - 60', value: grupo_41_60_m, color: 3 },
+        { etiqueta: '61+', value: grupo_61_mas_m, color: 4 }
+      ];
+
+      const grupo_0_20_h = hombres.filter((item: any) => item.edad >= 0 && item.edad <= 20).length;
+      const grupo_21_40_h = hombres.filter((item: any) => item.edad >= 21 && item.edad <= 40).length;
+      const grupo_41_60_h = hombres.filter((item: any) => item.edad >= 41 && item.edad <= 60).length;
+      const grupo_61_mas_h = hombres.filter((item: any) => item.edad >= 61).length;
+
+      this.edadesHombres = [
+        { etiqueta: '0 - 20', value: grupo_0_20_h, color: 1 },
+        { etiqueta: '21 - 40', value: grupo_21_40_h, color: 2 },
+        { etiqueta: '41 - 60', value: grupo_41_60_h, color: 3 },
+        { etiqueta: '61+', value: grupo_61_mas_h, color: 4 }
+      ];
+
+      this.edadesAgrupadas = [
+        { etiqueta: '0 - 20', value: grupo_0_20_h + grupo_0_20_m, color: 1 },
+        { etiqueta: '21 - 40', value: grupo_21_40_h + grupo_21_40_m, color: 2 },
+        { etiqueta: '41 - 60', value: grupo_41_60_h + grupo_41_60_m, color: 3 },
+        { etiqueta: '61+', value: grupo_61_mas_h + grupo_61_mas_m, color: 4 }
+      ];
+
+      this.totalHombres = hombres.length;
+      this.totalMujeres = mujeres.length;
+      this.totalGeneral = response.length;
+    }, error => {
+      this.loading = false;
+      Swal.fire({
+        icon: 'error',
+        title: '¡Ops!',
+        text: error
+      });
+    });
+  }
 
   customizeTooltip = (pointInfo: any) => {
     return {
@@ -116,6 +224,9 @@ export class TableroComponent implements OnInit {
     };
   };
 
+  customizeLabelText = (info: any) => {
+    return `${info.value}`;
+  };
 
   customizeEdadTooltip = (pointInfo: any) => {
     return {
@@ -177,14 +288,11 @@ export class TableroComponent implements OnInit {
     };
   };
 
-
-
   customizeEdadMujeresTooltip = (pointInfo: any) => {
     return {
       text: `${pointInfo.argumentText}:   ${pointInfo.value} Mujeres`
     };
   };
-
 
   capitalizarGenero = (data: any) => {
     return data.genero.charAt(0).toUpperCase() + data.genero.slice(1).toLowerCase();
@@ -192,7 +300,6 @@ export class TableroComponent implements OnInit {
 
   formatearFecha = (data: any) => {
     const fecha = new Date(data.fecha);
-
     const dia = fecha.getDate().toString().padStart(2, '0');
     const mes = fecha.toLocaleString('en-US', { month: 'short' });
     const anio = fecha.getFullYear();
@@ -204,5 +311,19 @@ export class TableroComponent implements OnInit {
 
     return `${dia}-${mes}-${anio} ${hora}`;
   };
+  
+  private formatearFechaLocal(fecha: Date): string {
+    const year = fecha.getFullYear();
+    const month = (fecha.getMonth() + 1).toString().padStart(2, '0');
+    const day = fecha.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 
+  formatearPorFecha(date: Date): string {
+    if (!(date instanceof Date) || isNaN(date.getTime())) return '';
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 }

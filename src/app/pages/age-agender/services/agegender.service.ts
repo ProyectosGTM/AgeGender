@@ -13,5 +13,14 @@ export class AgeGenderService {
   obtenerGender(): Observable<any> {
     return this.http.get<any>(`${environment.API_SECURITY}/api/incidencias`);
   }
+
+  obtenerDistribucionPorDia(fecha: string) {
+    return this.http.get<any[]>(`https://agegender.ddns.net/api/incidencias/por-hora?fecha=${fecha}`);
+  }
+
+  obtenerGenderPorRango(fechaInicio: string, fechaFin: string): Observable<any> {
+    const url = `${environment.API_SECURITY}/api/incidencias/rango?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+    return this.http.get<any>(url);
+  }
   
 }

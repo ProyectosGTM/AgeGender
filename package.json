@@ -71,7 +71,7 @@
     "ngx-ui-switch": "^15.0.0",
     "rxjs": "^7.8.1",
     "simplebar-angular": "^3.2.4",
-    "sweetalert2": "^11.10.1",
+    "sweetalert2": "^11.21.2",
     "zone.js": "^0.14.2"
   },
   "devDependencies": {
