@@ -18,7 +18,8 @@
               </div>
               <div class="d-flex flex-column" *ngIf="buttonsFecha" [@fadeInUp]>
                 <label class="text-white mb-1">Fecha Fin:</label>
-                <dx-date-box type="date" [(value)]="fechaFin" [width]="200" [inputAttr]="{ 'aria-label': 'Fecha Fin' }"></dx-date-box>
+                <dx-date-box type="date" [(value)]="fechaFin" [width]="200"
+                  [inputAttr]="{ 'aria-label': 'Fecha Fin' }"></dx-date-box>
               </div>
               <div class="d-flex align-items-end">
                 <button class="btn btn-primary" (click)="consultarPorRango()" [@fadeInUp] *ngIf="buttonsFecha">
@@ -107,19 +108,22 @@
                   <dxo-filter-row [visible]="showFilterRow"></dxo-filter-row>
                   <dxo-header-filter [visible]="showHeaderFilter"></dxo-header-filter>
                   <dxo-grouping [autoExpandAll]="true"></dxo-grouping>
-                  
-                  <dxi-column dataField="genero" caption="Genero" alignment="center" [calculateCellValue]="capitalizarGenero"></dxi-column>
+
+                  <dxi-column dataField="genero" caption="Genero" alignment="center"
+                    [calculateCellValue]="capitalizarGenero"></dxi-column>
                   <dxi-column dataField="edad" caption="Edad" alignment="center" cellTemplate="eda">
-                    <div *dxTemplate="let or of 'eda' ">  
+                    <div *dxTemplate="let or of 'eda' ">
                       {{or.data.edad + ' ' + 'Años'}}
                     </div>
                   </dxi-column>
-                  <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center" cellTemplate="estAnim">
+                  <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center"
+                    cellTemplate="estAnim">
                     <div *dxTemplate="let t of 'estAnim' ">
                       {{t.data.estadoAnimo | titlecase}}
                     </div>
                   </dxi-column>
-                  <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center" [calculateCellValue]="formatearFecha"></dxi-column>
+                  <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center"
+                    [calculateCellValue]="formatearFecha"></dxi-column>
                   <dxi-column dataField="id" caption="Id" alignment="center" [width]="200"></dxi-column>
                   <dxo-summary>
                     <dxi-total-item column="id" summaryType="count" displayFormat="Total: {0}"
@@ -158,6 +162,7 @@
 
                 <dx-chart [dataSource]="distribucionPorHora" id="chart">
                   <dxo-common-series-settings argumentField="hora" type="stackedBar"></dxo-common-series-settings>
+
                   <dxi-series valueField="hombre" name="Hombres" color="#4a90e2">
                     <dxo-label [visible]="true" [customizeText]="customizeLabelText"></dxo-label>
                   </dxi-series>
@@ -168,9 +173,9 @@
                   <dxi-value-axis>
                     <dxo-title text="Cantidad de Personas"></dxo-title>
                   </dxi-value-axis>
+                  <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeTooltip"></dxo-tooltip>
                   <dxo-legend verticalAlignment="bottom" horizontalAlignment="center"
                     itemTextPosition="top"></dxo-legend>
-                  <!-- <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeTooltip"></dxo-tooltip> -->
                   <dxo-export [enabled]="true"></dxo-export>
                 </dx-chart>
               </div>

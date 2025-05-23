@@ -60,9 +60,18 @@ export class TableroComponent implements OnInit {
 
   actualizarDistribucionPorHora() {
     this.genService.obtenerDistribucionPorDia(this.fechaSeleccionada).subscribe((data) => {
-      this.distribucionPorHora = data.filter((item: any) => {
-        const hora = parseInt(item.hora.split(':')[0], 10);
-        return hora >= 8;
+      const horasEsperadas = Array.from({ length: 13 }, (_, i) => {
+        const hora = (i + 9).toString().padStart(2, '0');
+        return `${hora}:00`;
+      });
+
+      const datosPorHora = data.reduce((acc: any, item: any) => {
+        acc[item.hora] = item;
+        return acc;
+      }, {});
+
+      this.distribucionPorHora = horasEsperadas.map((hora) => {
+        return datosPorHora[hora] || { hora, hombre: 0, mujer: 0 };
       });
     });
   }
@@ -130,7 +139,7 @@ export class TableroComponent implements OnInit {
       this.totalGeneral = response.length;
     }, error => {
       this.loading = false;
-       Swal.fire({
+      Swal.fire({
         icon: 'error',
         title: '¡Ops!',
         text: error
@@ -138,12 +147,19 @@ export class TableroComponent implements OnInit {
     });
   }
 
+  public total: any
+  mostrarTotalAcumuladoFn = (info: any) => {
+    return `${info.value}`;
+  };
+
   consultarPorRango() {
     this.loading = true;
     const inicio = this.formatearPorFecha(this.fechaInicio);
     const fin = this.formatearPorFecha(this.fechaFin);
 
     this.genService.obtenerGenderPorRango(inicio, fin).subscribe(response => {
+      this.actualizarDistribucionPorHora()
+      this.loading = false;
 
       if (!response || response.length === 0) {
         this.loading = false;
@@ -155,6 +171,13 @@ export class TableroComponent implements OnInit {
           text: 'No se encontraron registros con el rango de fechas seleccionado.'
         });
       }
+      this.loading = false;
+
+      this.distribucionPorHora = response.map((item: any) => ({
+        ...item,
+        total: item.hombre + item.mujer
+      }));
+
 
       const hombres = response.filter((item: any) => item.genero.toLowerCase() === 'hombre');
       const mujeres = response.filter((item: any) => item.genero.toLowerCase() === 'mujer');
@@ -220,9 +243,10 @@ export class TableroComponent implements OnInit {
 
   customizeTooltip = (pointInfo: any) => {
     return {
-      text: `${pointInfo.argument}:   ${pointInfo.value}`
+      text: `${pointInfo.argument} - ${pointInfo.value}: ${pointInfo.seriesName}`
     };
   };
+
 
   customizeLabelText = (info: any) => {
     return `${info.value}`;
@@ -311,7 +335,7 @@ export class TableroComponent implements OnInit {
 
     return `${dia}-${mes}-${anio} ${hora}`;
   };
-  
+
   private formatearFechaLocal(fecha: Date): string {
     const year = fecha.getFullYear();
     const month = (fecha.getMonth() + 1).toString().padStart(2, '0');
