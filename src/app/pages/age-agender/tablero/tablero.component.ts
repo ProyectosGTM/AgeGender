@@ -28,7 +28,9 @@ export class TableroComponent implements OnInit {
   public loading: boolean = false;
   public loadingMessage: string = 'Cargando...';
   public distribucionPorHora: any;
-  public fechaSeleccionada: string = this.formatearFechaLocal(new Date());
+  public fechaSeleccionada: Date = new Date(); // mantiene el objeto Date
+  public fechaSeleccionadaTexto: string = this.formatearFechaTexto(this.fechaSeleccionada); // para mostrar
+
   public fechaInicio: Date = new Date();
   public fechaFin: Date = new Date();
   public resultadoRango: any;
@@ -59,7 +61,9 @@ export class TableroComponent implements OnInit {
   }
 
   actualizarDistribucionPorHora() {
-    this.genService.obtenerDistribucionPorDia(this.fechaSeleccionada).subscribe((data) => {
+    const fechaFormateada = this.formatearPorFecha(this.fechaSeleccionada);
+
+    this.genService.obtenerDistribucionPorDia(fechaFormateada).subscribe((data) => {
       const horasEsperadas = Array.from({ length: 13 }, (_, i) => {
         const hora = (i + 9).toString().padStart(2, '0');
         return `${hora}:00`;
@@ -75,6 +79,7 @@ export class TableroComponent implements OnInit {
       });
     });
   }
+
 
   obtenerDatos() {
     this.buttonsFecha = true;
@@ -350,4 +355,18 @@ export class TableroComponent implements OnInit {
     const day = date.getDate().toString().padStart(2, '0');
     return `${year}-${month}-${day}`;
   }
+
+  formatearFechaTexto(fecha: Date): string {
+    const meses = [
+      'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+      'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+    ];
+
+    const dia = fecha.getDate();
+    const mes = meses[fecha.getMonth()];
+    const anio = fecha.getFullYear();
+
+    return `${dia}-${mes}-${anio}`;
+  }
+
 }
