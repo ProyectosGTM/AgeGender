@@ -14,6 +14,10 @@ export class AgeGenderService {
     return this.http.get<any>(`${environment.API_SECURITY}/api/incidencias`);
   }
 
+  obtenerUltimoHit(): Observable<any> {
+    return this.http.get(`${environment.API_SECURITY}/api/incidencias/ultimo-hit`);
+  }
+
   obtenerDistribucionPorDia(fecha: string) {
     return this.http.get<any[]>(`${environment.API_SECURITY}/api/incidencias/por-hora?fecha=${fecha}`);
   }

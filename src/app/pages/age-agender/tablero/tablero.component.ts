@@ -3,6 +3,7 @@ import { MedalsInfo, Service } from './app.service';
 import { AgeGenderService } from '../services/agegender.service';
 import Swal from 'sweetalert2';
 import { fadeInUpAnimation } from 'src/app/core/animations/fade-in-up.animation';
+import { SocketService } from 'src/app/shared/socket.service';
 
 @Component({
   selector: 'app-tablero',
@@ -39,8 +40,12 @@ export class TableroComponent implements OnInit {
   public resultadoRango: any;
   public buttonInfo: boolean = false;
   public buttonsFecha: boolean = true;
+  public modoConsultaPorRango: boolean = false;
+  public ultimoHit: any = null;
+  public totalFiltrado: number = 0;
 
-  constructor(service: Service, private genService: AgeGenderService) {
+
+  constructor(service: Service, private genService: AgeGenderService, private socketService: SocketService) {
     this.olympicMedals = service.getMedalsData();
     this.showFilterRow = true;
     this.showHeaderFilter = true;
@@ -51,8 +56,25 @@ export class TableroComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('ngOnInit iniciado'); // Opcional: para debug
+
     this.obtenerDatos();
     this.actualizarDistribucionPorHora();
+    this.obtenerHitActual(); //Aquí afuera del socket
+
+    // Escuchar incidencias en tiempo real
+    this.socketService.listen('nueva_incidencia').subscribe((data) => {
+      console.log('Nueva incidencia recibida:', data);
+
+      if (this.modoConsultaPorRango) {
+        this.consultarPorRango();
+      } else {
+        this.obtenerDatos();
+        this.actualizarDistribucionPorHora();
+      }
+
+      this.obtenerHitActual(); //También aquí
+    });
   }
 
   manejarCambioOpciones(e: any) {
@@ -61,6 +83,10 @@ export class TableroComponent implements OnInit {
         e.component.option('grouping.autoExpandAll', false);
       });
     }
+  }
+
+  actualizarTotalFiltrado(e: any): void {
+    this.totalFiltrado = e.component.totalCount();;
   }
 
   actualizarDistribucionPorHora() {
@@ -83,99 +109,70 @@ export class TableroComponent implements OnInit {
           return acc;
         }, {});
 
-        this.distribucionPorHora = horasEsperadas.map((hora) => {
-          return datosPorHora[hora] || { hora, hombre: 0, mujer: 0 };
-        });
+        this.distribucionPorHora = this.filtrarHorasValidas(
+          horasEsperadas.map((hora) => datosPorHora[hora] || { hora, hombre: 0, mujer: 0 })
+        );
+
       });
   }
 
-  obtenerDatos() {
+  obtenerDatos(): void {
+    this.modoConsultaPorRango = false;
     this.buttonsFecha = true;
     this.buttonInfo = false;
     this.loading = true;
+
+    // Reiniciar pickers al día actual
+    const hoy = new Date();
+    this.fechaInicio = hoy;
+    this.fechaFin = hoy;
+    this.fechaSeleccionada = hoy;
+    this.fechaSeleccionadaTexto = this.formatearFechaTexto(this.fechaSeleccionada);
+
     this.genService.obtenerGender().subscribe(
       (response) => {
         this.loading = false;
-        const hombres = response.filter(
-          (item: any) => item.genero.toLowerCase() === 'hombre'
-        );
-        const mujeres = response.filter(
-          (item: any) => item.genero.toLowerCase() === 'mujer'
-        );
+
+        const hombres = response.filter((item: any) => item.genero.toLowerCase() === 'hombre');
+        const mujeres = response.filter((item: any) => item.genero.toLowerCase() === 'mujer');
 
         this.informacionGrid = response;
+        this.total = response.length;
 
         this.informacion = [
-          {
-            etiqueta: 'Hombres',
-            value: hombres.length,
-            colors: 2,
-          },
-          {
-            etiqueta: 'Mujeres',
-            value: mujeres.length,
-            colors: 1,
-          },
+          { etiqueta: 'Hombres', value: hombres.length, colors: 2 },
+          { etiqueta: 'Mujeres', value: mujeres.length, colors: 1 },
         ];
 
-        const grupo_0_20_m = mujeres.filter(
-          (item: any) => item.edad >= 0 && item.edad <= 20
-        ).length;
-        const grupo_21_40_m = mujeres.filter(
-          (item: any) => item.edad >= 21 && item.edad <= 40
-        ).length;
-        const grupo_41_60_m = mujeres.filter(
-          (item: any) => item.edad >= 41 && item.edad <= 60
-        ).length;
-        const grupo_61_mas_m = mujeres.filter(
-          (item: any) => item.edad >= 61
-        ).length;
+        const agrupar = (grupo: any[], min: number, max?: number) =>
+          grupo.filter((i) => (max ? i.edad >= min && i.edad <= max : i.edad >= min)).length;
 
         this.edadesMujeres = [
-          { etiqueta: '0 - 20', value: grupo_0_20_m, color: 1 },
-          { etiqueta: '21 - 40', value: grupo_21_40_m, color: 2 },
-          { etiqueta: '41 - 60', value: grupo_41_60_m, color: 3 },
-          { etiqueta: '61+', value: grupo_61_mas_m, color: 4 },
+          { etiqueta: '0 - 20', value: agrupar(mujeres, 0, 20), color: 1 },
+          { etiqueta: '21 - 40', value: agrupar(mujeres, 21, 40), color: 2 },
+          { etiqueta: '41 - 60', value: agrupar(mujeres, 41, 60), color: 3 },
+          { etiqueta: '61+', value: agrupar(mujeres, 61), color: 4 },
         ];
-
-        const grupo_0_20_h = hombres.filter(
-          (item: any) => item.edad >= 0 && item.edad <= 20
-        ).length;
-        const grupo_21_40_h = hombres.filter(
-          (item: any) => item.edad >= 21 && item.edad <= 40
-        ).length;
-        const grupo_41_60_h = hombres.filter(
-          (item: any) => item.edad >= 41 && item.edad <= 60
-        ).length;
-        const grupo_61_mas_h = hombres.filter(
-          (item: any) => item.edad >= 61
-        ).length;
 
         this.edadesHombres = [
-          { etiqueta: '0 - 20', value: grupo_0_20_h, color: 1 },
-          { etiqueta: '21 - 40', value: grupo_21_40_h, color: 2 },
-          { etiqueta: '41 - 60', value: grupo_41_60_h, color: 3 },
-          { etiqueta: '61+', value: grupo_61_mas_h, color: 4 },
+          { etiqueta: '0 - 20', value: agrupar(hombres, 0, 20), color: 1 },
+          { etiqueta: '21 - 40', value: agrupar(hombres, 21, 40), color: 2 },
+          { etiqueta: '41 - 60', value: agrupar(hombres, 41, 60), color: 3 },
+          { etiqueta: '61+', value: agrupar(hombres, 61), color: 4 },
         ];
 
-        this.edadesAgrupadas = [
-          { etiqueta: '0 - 20', value: grupo_0_20_h + grupo_0_20_m, color: 1 },
-          {
-            etiqueta: '21 - 40',
-            value: grupo_21_40_h + grupo_21_40_m,
-            color: 2,
-          },
-          {
-            etiqueta: '41 - 60',
-            value: grupo_41_60_h + grupo_41_60_m,
-            color: 3,
-          },
-          { etiqueta: '61+', value: grupo_61_mas_h + grupo_61_mas_m, color: 4 },
-        ];
+        this.edadesAgrupadas = this.edadesMujeres.map((grupo, i) => ({
+          etiqueta: grupo.etiqueta,
+          value: grupo.value + this.edadesHombres[i].value,
+          color: grupo.color,
+        }));
 
         this.totalHombres = hombres.length;
         this.totalMujeres = mujeres.length;
         this.totalGeneral = response.length;
+
+        // Actualizar gráfico de barras por hora
+        this.actualizarDistribucionPorHora();
       },
       (error) => {
         this.loading = false;
@@ -194,6 +191,7 @@ export class TableroComponent implements OnInit {
   };
 
   consultarPorRango() {
+    this.modoConsultaPorRango = true;
     this.loading = true;
 
     const inicio = this.formatearPorFecha(this.fechaInicio);
@@ -279,6 +277,7 @@ export class TableroComponent implements OnInit {
           this.totalHombres = hombres.length;
           this.totalMujeres = mujeres.length;
           this.totalGeneral = response.length;
+          
         }
 
         this.loading = false;
@@ -306,9 +305,10 @@ export class TableroComponent implements OnInit {
           return acc;
         }, {});
 
-        this.distribucionPorHora = horasEsperadas.map((hora) => {
-          return datosPorHora[hora] || { hora, hombre: 0, mujer: 0 };
-        });
+        this.distribucionPorHora = this.filtrarHorasValidas(
+          horasEsperadas.map((hora) => datosPorHora[hora] || { hora, hombre: 0, mujer: 0 })
+        );
+
       },
       (error) => {
         Swal.fire({
@@ -451,4 +451,38 @@ export class TableroComponent implements OnInit {
 
     return `${dia}-${mes}-${anio}`;
   }
+
+  actualizarTotalVisible(e: any) {
+    if (e.component) {
+      const totalVisibles = e.component.getVisibleRows().length;
+      e.component.option('summary.totalItems[0].value', totalVisibles);
+    }
+  }
+
+  obtenerHitActual() {
+    console.log('Llamando a obtenerHitActual()...');
+    this.genService.obtenerUltimoHit().subscribe(
+      (hit: any) => {
+        console.log('Último hit recibido:', hit);
+        if (hit && hit.id && hit.fecha) {
+          this.ultimoHit = hit;
+        } else {
+          console.warn('Respuesta inválida para último hit:', hit);
+          this.ultimoHit = null;
+        }
+      },
+      (error) => {
+        console.error('Error al obtener el hit actual:', error);
+        this.ultimoHit = null;
+      }
+    );
+  }
+
+  filtrarHorasValidas(data: any[]): any[] {
+    return data.filter((item) => {
+      const h = parseInt(item.hora.split(':')[0], 10);
+      return h >= 8 && h <= 21;
+    });
+  }
+
 }
