@@ -465,7 +465,15 @@ export class TableroComponent implements OnInit {
       (hit: any) => {
         console.log('Último hit recibido:', hit);
         if (hit && hit.id && hit.fecha) {
+          const nuevoId = hit.id;
+          const hitPrevioId = this.ultimoHit?.id;
+
           this.ultimoHit = hit;
+
+          // Solo reproduce sonido si el hit es nuevo
+          if (nuevoId !== hitPrevioId) {
+            this.reproducirSonidoHit();
+          }
         } else {
           console.warn('Respuesta inválida para último hit:', hit);
           this.ultimoHit = null;
@@ -482,6 +490,13 @@ export class TableroComponent implements OnInit {
     return data.filter((item) => {
       const h = parseInt(item.hora.split(':')[0], 10);
       return h >= 8 && h <= 21;
+    });
+  }
+
+  reproducirSonidoHit() {
+    const audio = new Audio('assets/audio/newHit.mp3');
+    audio.play().catch((error) => {
+      console.warn('No se pudo reproducir el sonido:', error);
     });
   }
 

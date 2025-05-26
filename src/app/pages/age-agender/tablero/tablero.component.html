@@ -26,11 +26,11 @@
                     <i class="dx-icon-clock me-1"></i> {{ ultimoHit.edad }} años |
                     <i class="dx-icon-eyeopen me-1"></i> {{ ultimoHit.estadoAnimo | titlecase }}
                   </p>
-                  <small class="text-muted">{{ formatearFecha(ultimoHit) }}</small>
+                  <small class="text-muted">ID Registro: {{ ultimoHit.id }}</small>
                 </div>
               </div>
               <div class="mt-3 mt-md-0">
-                <span class="badge bg-info text-dark fs-6">ID Registro: {{ ultimoHit.id }}</span>
+                <span class="badge bg-info text-dark fs-6">{{ formatearFecha(ultimoHit) }}</span>
               </div>
             </div>
           </div>
