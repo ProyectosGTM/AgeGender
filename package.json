@@ -50,6 +50,8 @@
     "devextreme": "23.2.4",
     "devextreme-angular": "23.2.4",
     "echarts": "^5.4.3",
+    "exceljs": "^4.4.0",
+    "file-saver-es": "^2.0.5",
     "firebase": "^10.7.1",
     "flatpickr": "^4.6.13",
     "leaflet": "^1.9.4",

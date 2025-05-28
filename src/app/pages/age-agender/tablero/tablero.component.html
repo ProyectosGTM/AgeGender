@@ -41,14 +41,16 @@
               <div class="d-flex flex-column" *ngIf="buttonsFecha" [@fadeInUp]>
                 <label class="text-white mb-1">Fecha Inicio:</label>
                 <dx-date-box type="date" [(value)]="fechaInicio" [width]="200" [displayFormat]="'dd-MMM-yyyy'"
-                  [inputAttr]="{ 'aria-label': 'Fecha Inicio' }">
+                  [inputAttr]="{ 'aria-label': 'Fecha Inicio' }"
+                  (onValueChanged)="onFechaChange($event, 'start')">
                 </dx-date-box>
               </div>
 
               <div class="d-flex flex-column" *ngIf="buttonsFecha" [@fadeInUp]>
                 <label class="text-white mb-1">Fecha Fin:</label>
                 <dx-date-box type="date" [(value)]="fechaFin" [width]="200" [displayFormat]="'dd-MMM-yyyy'"
-                  [inputAttr]="{ 'aria-label': 'Fecha Fin' }">
+                  [inputAttr]="{ 'aria-label': 'Fecha Fin' }"
+                  (onValueChanged)="onFechaChange($event, 'end')">
                 </dx-date-box>
               </div>
 
@@ -171,6 +173,7 @@
                   [allowColumnReordering]="true"
                   (onOptionChanged)="manejarCambioOpciones($event)"
                   (onContentReady)="actualizarTotalFiltrado($event)"
+                  (onExporting)="onExporting($event)"
                 >
                   <dxo-search-panel [visible]="true" [width]="200" placeholder="Buscar..."></dxo-search-panel>
                   <dxo-paging [pageSize]="10"></dxo-paging>
@@ -200,8 +203,8 @@
                   </dxo-summary>
 
                   <dxo-export
-                    [enabled]="false"
-                    [allowExportSelectedData]="true"
+                    [enabled]="true"
+                    [allowExportSelectedData]="false"
                     [texts]="{ exportAll: 'Exportar todos los datos a Excel' }"
                   ></dxo-export>
                 </dx-data-grid>
