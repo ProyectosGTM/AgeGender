@@ -377,6 +377,9 @@ export class TableroComponent implements OnInit {
       });
     }
   );
+  setTimeout(()=> {
+    this.buttonInfo = true;
+  },8000)
 }
 
   customizeTooltip = (pointInfo: any) => {
