@@ -560,7 +560,7 @@ export class TableroComponent implements OnInit {
 
   onExporting(e: any) {
     const workbook = new Workbook();
-    const worksheet = workbook.addWorksheet('Reporte de Ventas');
+    const worksheet = workbook.addWorksheet('AgeGender');
     const grid = e.component;
     const accionesColumn = grid.columnOption('Acciones');
     grid.beginUpdate();
