@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   defaultauth: 'fackbackend',
-  API_SECURITY: 'https://agegender.ddns.net',
+  API_SECURITY: 'http://216.238.84.5:3004',
   firebaseConfig: {
     apiKey: '',
     authDomain: '',
