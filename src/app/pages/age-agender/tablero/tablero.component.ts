@@ -521,31 +521,59 @@ export class TableroComponent implements OnInit {
     }
   }
 
-  obtenerHitActual() {
-    console.log('Llamando a obtenerHitActual()...');
-    this.genService.obtenerUltimoHit().subscribe(
-      (hit: any) => {
-        console.log('Último hit recibido:', hit);
-        if (hit && hit.id && hit.fecha) {
-          const nuevoId = hit.id;
-          const hitPrevioId = this.ultimoHit?.id;
+  public colorEstado: 'default' | 'hombre' | 'mujer' = 'default';
+private colorTimeout: any = null;
+private hitInicial: boolean = true; // para no aplicar color la primera vez
 
-          this.ultimoHit = hit;
+obtenerHitActual() {
+  this.genService.obtenerUltimoHit().subscribe(
+    (hit: any) => {
+      if (hit && hit.id && hit.fecha) {
+        const nuevoId = hit.id;
+        const hitPrevioId = this.ultimoHit?.id;
 
-          if (nuevoId !== hitPrevioId) {
-            this.reproducirSonidoHit();
-          }
-        } else {
-          console.warn('Respuesta inválida para último hit:', hit);
-          this.ultimoHit = null;
+        const esNuevoHit = nuevoId !== hitPrevioId;
+        this.ultimoHit = hit;
+
+        // NO hacer nada visual en el primer hit al cargar
+        if (this.hitInicial) {
+          this.hitInicial = false;
+          return;
         }
-      },
-      (error) => {
-        console.error('Error al obtener el hit actual:', error);
+
+        // Si es nuevo hit, activar color temporal
+        if (esNuevoHit) {
+          this.reproducirSonidoHit();
+          this.activarColorTemporario(hit.genero?.toLowerCase());
+        }
+      } else {
         this.ultimoHit = null;
       }
-    );
+    },
+    () => {
+      this.ultimoHit = null;
+    }
+  );
+}
+
+activarColorTemporario(genero: string) {
+  if (this.colorTimeout) clearTimeout(this.colorTimeout);
+
+  if (genero === 'hombre') {
+    this.colorEstado = 'hombre';
+  } else if (genero === 'mujer') {
+    this.colorEstado = 'mujer';
+  } else {
+    return;
   }
+
+  this.colorTimeout = setTimeout(() => {
+    this.colorEstado = 'default';
+  }, 5000);
+}
+
+
+
 
   filtrarHorasValidas(data: any[]): any[] {
     return data.filter((item) => {
