@@ -103,7 +103,7 @@ export class TableroComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log('ngOnInit iniciado'); 
+    console.log('ngOnInit iniciado');
 
     this.obtenerDatos();
     this.actualizarDistribucionPorHora();
@@ -244,143 +244,143 @@ export class TableroComponent implements OnInit {
   };
 
   consultarPorRango() {
-  this.modoConsultaPorRango = true;
-  this.loading = true;
+    this.modoConsultaPorRango = true;
+    this.loading = true;
 
-  const inicio = this.formatearPorFecha(this.fechaInicio);
-  const fin = this.formatearPorFecha(this.fechaFin);
+    const inicio = this.formatearPorFecha(this.fechaInicio);
+    const fin = this.formatearPorFecha(this.fechaFin);
 
-  // LLAMADA 1
-  this.genService.obtenerGenderPorRango(inicio, fin).subscribe(
-    (response) => {
-      if (!response || response.length === 0) {
-        this.buttonInfo = true;
-        this.buttonsFecha = false;
-        Swal.fire({
-          icon: 'info',
-          title: 'Sin Resultados',
-          text: 'No se encontraron registros con el rango de fechas seleccionado.',
-        });
-      } else {
+    // LLAMADA 1
+    this.genService.obtenerGenderPorRango(inicio, fin).subscribe(
+      (response) => {
+        if (!response || response.length === 0) {
+          this.buttonInfo = true;
+          this.buttonsFecha = false;
+          Swal.fire({
+            icon: 'info',
+            title: 'Sin Resultados',
+            text: 'No se encontraron registros con el rango de fechas seleccionado.',
+          });
+        } else {
+          this.buttonInfo = false;
+          this.buttonsFecha = true;
+          this.informacionGrid = response;
+
+          const hombres = response.filter(
+            (item: any) => item.genero.toLowerCase() === 'hombre'
+          );
+          const mujeres = response.filter(
+            (item: any) => item.genero.toLowerCase() === 'mujer'
+          );
+
+          this.informacion = [
+            { etiqueta: 'Hombres', value: hombres.length, colors: 2 },
+            { etiqueta: 'Mujeres', value: mujeres.length, colors: 1 },
+          ];
+
+          const contarPorEdad = (grupo: any[], min: number, max?: number) =>
+            grupo.filter((item) =>
+              max ? item.edad >= min && item.edad <= max : item.edad >= min
+            ).length;
+
+          this.edadesMujeres = [
+            {
+              etiqueta: '0 - 20',
+              value: contarPorEdad(mujeres, 0, 20),
+              color: 1,
+            },
+            {
+              etiqueta: '21 - 40',
+              value: contarPorEdad(mujeres, 21, 40),
+              color: 2,
+            },
+            {
+              etiqueta: '41 - 60',
+              value: contarPorEdad(mujeres, 41, 60),
+              color: 3,
+            },
+            { etiqueta: '61+', value: contarPorEdad(mujeres, 61), color: 4 },
+          ];
+
+          this.edadesHombres = [
+            {
+              etiqueta: '0 - 20',
+              value: contarPorEdad(hombres, 0, 20),
+              color: 1,
+            },
+            {
+              etiqueta: '21 - 40',
+              value: contarPorEdad(hombres, 21, 40),
+              color: 2,
+            },
+            {
+              etiqueta: '41 - 60',
+              value: contarPorEdad(hombres, 41, 60),
+              color: 3,
+            },
+            { etiqueta: '61+', value: contarPorEdad(hombres, 61), color: 4 },
+          ];
+
+          this.edadesAgrupadas = this.edadesMujeres.map((grupo, index) => ({
+            etiqueta: grupo.etiqueta,
+            value: grupo.value + this.edadesHombres[index].value,
+            color: grupo.color,
+          }));
+
+          this.totalHombres = hombres.length;
+          this.totalMujeres = mujeres.length;
+          this.totalGeneral = response.length;
+
+        }
+
+        this.loading = false;
+      },
+      (error) => {
         this.buttonInfo = false;
         this.buttonsFecha = true;
-        this.informacionGrid = response;
-
-        const hombres = response.filter(
-          (item: any) => item.genero.toLowerCase() === 'hombre'
-        );
-        const mujeres = response.filter(
-          (item: any) => item.genero.toLowerCase() === 'mujer'
-        );
-
-        this.informacion = [
-          { etiqueta: 'Hombres', value: hombres.length, colors: 2 },
-          { etiqueta: 'Mujeres', value: mujeres.length, colors: 1 },
-        ];
-
-        const contarPorEdad = (grupo: any[], min: number, max?: number) =>
-          grupo.filter((item) =>
-            max ? item.edad >= min && item.edad <= max : item.edad >= min
-          ).length;
-
-        this.edadesMujeres = [
-          {
-            etiqueta: '0 - 20',
-            value: contarPorEdad(mujeres, 0, 20),
-            color: 1,
-          },
-          {
-            etiqueta: '21 - 40',
-            value: contarPorEdad(mujeres, 21, 40),
-            color: 2,
-          },
-          {
-            etiqueta: '41 - 60',
-            value: contarPorEdad(mujeres, 41, 60),
-            color: 3,
-          },
-          { etiqueta: '61+', value: contarPorEdad(mujeres, 61), color: 4 },
-        ];
-
-        this.edadesHombres = [
-          {
-            etiqueta: '0 - 20',
-            value: contarPorEdad(hombres, 0, 20),
-            color: 1,
-          },
-          {
-            etiqueta: '21 - 40',
-            value: contarPorEdad(hombres, 21, 40),
-            color: 2,
-          },
-          {
-            etiqueta: '41 - 60',
-            value: contarPorEdad(hombres, 41, 60),
-            color: 3,
-          },
-          { etiqueta: '61+', value: contarPorEdad(hombres, 61), color: 4 },
-        ];
-
-        this.edadesAgrupadas = this.edadesMujeres.map((grupo, index) => ({
-          etiqueta: grupo.etiqueta,
-          value: grupo.value + this.edadesHombres[index].value,
-          color: grupo.color,
-        }));
-
-        this.totalHombres = hombres.length;
-        this.totalMujeres = mujeres.length;
-        this.totalGeneral = response.length;
-
+        this.loading = false;
+        Swal.fire({
+          icon: 'error',
+          title: '¡Ops!',
+          text: 'Error al obtener datos por rango: ' + error,
+        });
       }
+    );
 
-      this.loading = false;
-    },
-    (error) => {
-      this.buttonInfo = false;
-      this.buttonsFecha = true;
-      this.loading = false;
-      Swal.fire({
-        icon: 'error',
-        title: '¡Ops!',
-        text: 'Error al obtener datos por rango: ' + error,
-      });
-    }
-  );
+    // LLAMADA 2
+    this.genService.obtenerGenderPorRangoHora(inicio, fin).subscribe(
+      (data) => {
+        const horasEsperadas = Array.from({ length: 16 }, (_, i) => {
+          const hora = (i + 8).toString().padStart(2, '0');
+          return `${hora}:00`;
+        });
 
-  // LLAMADA 2
-  this.genService.obtenerGenderPorRangoHora(inicio, fin).subscribe(
-    (data) => {
-      const horasEsperadas = Array.from({ length: 16 }, (_, i) => {
-        const hora = (i + 8).toString().padStart(2, '0');
-        return `${hora}:00`;
-      });
+        const datosPorHora = data.reduce((acc: any, item: any) => {
+          acc[item.hora] = item;
+          return acc;
+        }, {});
 
-      const datosPorHora = data.reduce((acc: any, item: any) => {
-        acc[item.hora] = item;
-        return acc;
-      }, {});
+        this.distribucionPorHora = this.filtrarHorasValidas(
+          horasEsperadas.map((hora) => datosPorHora[hora] || { hora, hombre: 0, mujer: 0 })
+        );
 
-      this.distribucionPorHora = this.filtrarHorasValidas(
-        horasEsperadas.map((hora) => datosPorHora[hora] || { hora, hombre: 0, mujer: 0 })
-      );
-
-      this.buttonInfo = false;
-      this.buttonsFecha = true;
-    },
-    (error) => {
-      this.buttonInfo = false;
-      this.buttonsFecha = true;
-      Swal.fire({
-        icon: 'error',
-        title: '¡Ops!',
-        text: 'Error al obtener datos por hora: ' + error,
-      });
-    }
-  );
-  setTimeout(()=> {
-    this.buttonInfo = true;
-  },8000)
-}
+        this.buttonInfo = false;
+        this.buttonsFecha = true;
+      },
+      (error) => {
+        this.buttonInfo = false;
+        this.buttonsFecha = true;
+        Swal.fire({
+          icon: 'error',
+          title: '¡Ops!',
+          text: 'Error al obtener datos por hora: ' + error,
+        });
+      }
+    );
+    setTimeout(() => {
+      this.buttonInfo = true;
+    }, 8000)
+  }
 
   customizeTooltip = (pointInfo: any) => {
     return {
@@ -521,30 +521,55 @@ export class TableroComponent implements OnInit {
     }
   }
 
+  public colorEstado: 'default' | 'hombre' | 'mujer' = 'default';
+  private colorTimeout: any = null;
+  private hitInicial: boolean = true; // para no aplicar color la primera vez
+
   obtenerHitActual() {
-    console.log('Llamando a obtenerHitActual()...');
     this.genService.obtenerUltimoHit().subscribe(
       (hit: any) => {
-        console.log('Último hit recibido:', hit);
         if (hit && hit.id && hit.fecha) {
           const nuevoId = hit.id;
           const hitPrevioId = this.ultimoHit?.id;
 
+          const esNuevoHit = nuevoId !== hitPrevioId;
           this.ultimoHit = hit;
 
-          if (nuevoId !== hitPrevioId) {
+          // NO hacer nada visual en el primer hit al cargar
+          if (this.hitInicial) {
+            this.hitInicial = false;
+            return;
+          }
+
+          // Si es nuevo hit, activar color temporal
+          if (esNuevoHit) {
             this.reproducirSonidoHit();
+            this.activarColorTemporario(hit.genero?.toLowerCase());
           }
         } else {
-          console.warn('Respuesta inválida para último hit:', hit);
           this.ultimoHit = null;
         }
       },
-      (error) => {
-        console.error('Error al obtener el hit actual:', error);
+      () => {
         this.ultimoHit = null;
       }
     );
+  }
+
+  activarColorTemporario(genero: string) {
+    if (this.colorTimeout) clearTimeout(this.colorTimeout);
+
+    if (genero === 'hombre') {
+      this.colorEstado = 'hombre';
+    } else if (genero === 'mujer') {
+      this.colorEstado = 'mujer';
+    } else {
+      return;
+    }
+
+    this.colorTimeout = setTimeout(() => {
+      this.colorEstado = 'default';
+    }, 10000);
   }
 
   filtrarHorasValidas(data: any[]): any[] {

@@ -1,7 +1,3 @@
-/* ============================
-   GENERAL AJUSTES DE DATAGRID
-============================ */
-
 ::ng-deep .dx-datagrid .dx-row > td {
   padding: 16px 16px;
   font-size: 18px;
@@ -15,13 +11,9 @@
   line-height: 16px;
 }
 
-/* ============================
-   FORMATO DE RESÚMENES
-============================ */
-
 ::ng-deep .dx-datagrid-summary-item {
   text-align: center;
-  color: #3bff00; /* Verde destacado */
+  color: #3bff00; 
 }
 
 ::ng-deep .small-sum-text {
@@ -34,10 +26,6 @@
   font-weight: bold;
 }
 
-/* ============================
-   COMPONENTES VISUALES EXTRA
-============================ */
-
 .space {
   padding: 15px;
 }
@@ -47,10 +35,6 @@
   height: 300px !important;
   margin: 0 auto;
 }
-
-/* ============================
-   CARD DE "HIT ACTUAL"
-============================ */
 
 .bg-gradient {
   background: linear-gradient(135deg, #1e1e2f 0%, #232332 100%);
@@ -66,10 +50,6 @@
   100% { box-shadow: 0 0 0px rgba(0, 255, 255, 0.3); }
 }
 
-/* ============================
-   TOTAL FILTRADO (ESQUINA IZQUIERDA)
-============================ */
-
 .total-filtrado-label {
   color: #3bff00;
   font-size: 1.4rem;
@@ -77,4 +57,32 @@
   padding-left: 0.25rem;
   padding-top: 0.5rem;
   display: inline-block;
+}
+
+.bg-info{
+  transition: 0.3s ease-in-out all;
+  color: white;
+}
+
+.bg-white{
+  color: black;
+  transition: 0.3s ease-in-out all;
+}
+
+.bg-pink {
+  transition: 0.3s ease-in-out all;
+  color: white;
+  background-color: #e83e8c !important;
+}
+
+.border-pink {
+  border-color: #e83e8c !important;
+}
+
+.border-info {
+  transition: 0.3s ease-in-out all;
+}
+
+.border-white {
+  transition: 0.3s ease-in-out all;
 }
