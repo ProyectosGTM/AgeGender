@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MedalsInfo, Service } from './app.service';
 import { AgeGenderService } from '../services/agegender.service';
 import Swal from 'sweetalert2';
@@ -7,6 +7,8 @@ import { SocketService } from 'src/app/shared/socket.service';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver-es';
 import { exportDataGrid } from 'devextreme/excel_exporter';
+import CustomStore from 'devextreme/data/custom_store';
+import { DxDataGridComponent } from 'devextreme-angular';
 
 @Component({
   selector: 'app-tablero',
@@ -46,6 +48,14 @@ export class TableroComponent implements OnInit {
   public modoConsultaPorRango: boolean = false;
   public ultimoHit: any = null;
   public totalFiltrado: number = 0;
+  dataSource: any;
+  pageSize = 25;
+  paginaActual = 1;
+  totalRegistros = 0;
+  totalPaginas = 0;
+  fechaInicioInc: any = '2025-01-30';
+  fechaFinInc: any = '2025-07-03';
+
 
   constructor(
     service: Service,
@@ -102,23 +112,28 @@ export class TableroComponent implements OnInit {
     }
   }
 
+  @ViewChild('gridRef', { static: false }) gridRef: DxDataGridComponent;
   ngOnInit(): void {
-    console.log('ngOnInit iniciado');
-
+    this.setFechasHoy();
+    this.setupDataSource();
     this.obtenerDatos();
     this.actualizarDistribucionPorHora();
     this.obtenerHitActual();
 
     this.socketService.listen('nueva_incidencia').subscribe((data) => {
       console.log('Nueva incidencia recibida:', data);
-
+      this.setupDataSource();
+      // this.reproducirSonidoHit()
+      if (this.gridRef) {
+        this.gridRef.instance.refresh();
+      }
+      // Si es modo rango, actualiza lo necesario, si no, los datos normales
       if (this.modoConsultaPorRango) {
         this.consultarPorRango();
       } else {
         this.obtenerDatos();
         this.actualizarDistribucionPorHora();
       }
-
       this.obtenerHitActual();
     });
   }
@@ -177,6 +192,7 @@ export class TableroComponent implements OnInit {
       this.fechaSeleccionada
     );
 
+    this.setupDataSource()
     this.genService.obtenerGender().subscribe(
       (response) => {
         this.loading = false;
@@ -380,7 +396,20 @@ export class TableroComponent implements OnInit {
     setTimeout(() => {
       this.buttonInfo = true;
     }, 8000)
+    this.fechaInicioInc = this.formatearFechaParaBackend(this.fechaInicio, true);
+    this.fechaFinInc = this.formatearFechaParaBackend(this.fechaFin, false);
+    this.setupDataSource();
   }
+
+  formatearFechaParaBackend(fecha: any, esInicio: boolean): string {
+    const fechaObj = typeof fecha === 'string' ? new Date(fecha) : fecha;
+    const year = fechaObj.getFullYear();
+    const month = (fechaObj.getMonth() + 1).toString().padStart(2, '0');
+    const day = fechaObj.getDate().toString().padStart(2, '0');
+    const hora = esInicio ? '00:00:00' : '23:59:59';
+    return `${year}-${month}-${day} ${hora}`;
+  }
+
 
   customizeTooltip = (pointInfo: any) => {
     return {
@@ -456,11 +485,21 @@ export class TableroComponent implements OnInit {
     };
   };
 
-  capitalizarGenero = (data: any) => {
-    return (
-      data.genero.charAt(0).toUpperCase() + data.genero.slice(1).toLowerCase()
-    );
-  };
+  capitalizarGenero(data: any): string {
+    if (!data.genero) return '';
+    return data.genero.charAt(0).toUpperCase() + data.genero.slice(1).toLowerCase();
+  }
+
+  getColorEstadoAnimo(estado: string): string {
+    if (!estado) return '#757575';
+    switch (estado.toLowerCase()) {
+      case 'feliz': return '#43a047';  // Verde
+      case 'neutral': return '#ffa726';  // Naranja
+      case 'triste': return '#e53935';  // Rojo
+      default: return '#757575';  // Gris
+    }
+  }
+
 
   formatearFecha = (data: any) => {
     const fecha = new Date(data.fecha);
@@ -523,7 +562,7 @@ export class TableroComponent implements OnInit {
 
   public colorEstado: 'default' | 'hombre' | 'mujer' = 'default';
   private colorTimeout: any = null;
-  private hitInicial: boolean = true; // para no aplicar color la primera vez
+  private hitInicial: boolean = true;
 
   obtenerHitActual() {
     this.genService.obtenerUltimoHit().subscribe(
@@ -531,17 +570,13 @@ export class TableroComponent implements OnInit {
         if (hit && hit.id && hit.fecha) {
           const nuevoId = hit.id;
           const hitPrevioId = this.ultimoHit?.id;
-
           const esNuevoHit = nuevoId !== hitPrevioId;
           this.ultimoHit = hit;
-
-          // NO hacer nada visual en el primer hit al cargar
           if (this.hitInicial) {
             this.hitInicial = false;
             return;
           }
 
-          // Si es nuevo hit, activar color temporal
           if (esNuevoHit) {
             this.reproducirSonidoHit();
             this.activarColorTemporario(hit.genero?.toLowerCase());
@@ -617,6 +652,117 @@ export class TableroComponent implements OnInit {
         grid.endUpdate();
         // console.error("Export failed: ", error);
       });
+  }
+
+  setFechasHoy() {
+    const ahora = new Date();
+    const inicio = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), 0, 0, 0);
+    const fin = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), 23, 59, 59);
+    this.fechaInicioInc = this.formatDateTime(inicio);
+    this.fechaFinInc = this.formatDateTime(fin);
+  }
+
+
+  formatDateTime(date: Date): string {
+    const pad = (n: number) => n < 10 ? '0' + n : n;
+    return date.getFullYear() + '-' +
+      pad(date.getMonth() + 1) + '-' +
+      pad(date.getDate()) + ' ' +
+      pad(date.getHours()) + ':' +
+      pad(date.getMinutes()) + ':' +
+      pad(date.getSeconds());
+  }
+
+  ngAfterViewInit() {
+  }
+
+  scrollToGrid() {
+    setTimeout(() => {
+      if (this.gridContainerRef && this.gridContainerRef.nativeElement) {
+        this.gridContainerRef.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 0);
+  }
+
+  setupDataSource() {
+    this.loading = true;
+    this.dataSource = new CustomStore({
+      load: (loadOptions: any) => {
+        const skipValue = loadOptions.skip || 0;
+        const page = Math.floor(skipValue / this.pageSize) + 1;
+
+        return this.genService.obtenerIncidencias(
+          this.fechaInicioInc,
+          this.fechaFinInc,
+          page,
+          this.pageSize
+        ).toPromise().then((response: any) => {
+          this.loading = false;
+
+          let data = [];
+
+          if (Array.isArray(response)) {
+            data = response;
+          } else {
+            data = response.data || [];
+          }
+
+          data = data.sort((a, b) => b.id - a.id);
+
+          const hit = data[0];
+          if (hit && hit.id && hit.fecha) {
+            const nuevoId = hit.id;
+            const hitPrevioId = this.ultimoHit?.id;
+            const esNuevoHit = nuevoId !== hitPrevioId;
+            this.ultimoHit = hit;
+            if (this.hitInicial) {
+              this.hitInicial = false;
+            } else if (esNuevoHit) {
+              this.activarColorTemporario(hit.genero?.toLowerCase());
+            }
+          } else {
+            this.ultimoHit = null;
+          }
+
+          if (data.length) {
+            this.scrollToGrid();
+          }
+
+          return {
+            data: data,
+            totalCount: (response.pagination?.total ?? response.total ?? data.length)
+          };
+        }).catch((error) => {
+          this.loading = false;
+          return {
+            data: [],
+            totalCount: 0
+          };
+        });
+      }
+    });
+  }
+
+  @ViewChild('gridContainer', { static: false }) gridContainerRef: any;
+  onPageIndexChanged(e: any) {
+    const pageIndex = e.component.pageIndex();
+    this.paginaActual = pageIndex + 1;
+    e.component.refresh();
+
+    setTimeout(() => {
+      
+      const grid = document.querySelector('#gridContainer .dx-datagrid-rowsview') as HTMLElement
+        || document.getElementById('gridContainer');
+      if (grid) {
+        const rect = grid.getBoundingClientRect();
+        const scrollTop = window.scrollY + rect.top - 30; 
+        window.scrollTo({ top: scrollTop, behavior: 'smooth' });
+      }
+    }, 50); 
+  }
+
+  getIndex(rowIndex: number): number {
+    return rowIndex + 1;
   }
 
 }
