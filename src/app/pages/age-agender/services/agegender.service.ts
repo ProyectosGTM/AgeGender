@@ -31,5 +31,16 @@ export class AgeGenderService {
     const url = `${environment.API_SECURITY}/api/incidencias/por-hora-rango?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
     return this.http.get<any>(url);
   }
-  
+
+  obtenerIncidencias(
+    fechaInicioInc: string,
+    fechaFinInc: string,
+    page: number,
+    limit: number
+  ): Observable<any> {
+    const url = `https://agegender.ddns.net/api/incidencias/rango-paginado?fechaInicio=${fechaInicioInc}&fechaFin=${fechaFinInc}&page=${page}&limit=${limit}&nocache=${Date.now()}`;
+    return this.http.get(url);
+  }
+
+
 }

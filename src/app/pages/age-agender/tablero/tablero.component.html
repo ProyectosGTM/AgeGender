@@ -10,76 +10,62 @@
       <div class="card">
         <div class="card-body">
 
-          <div
-  class="bg-gradient border-start border-5 rounded shadow-lg mb-4 p-4"
-  [ngClass]="{
-    'border-white': colorEstado === 'default',
-    'border-info': colorEstado === 'hombre',
-    'border-pink': colorEstado === 'mujer'
-  }"
-  *ngIf="ultimoHit"
->
-  <div class="d-flex justify-content-between align-items-center flex-wrap">
-    <div class="d-flex align-items-center">
-      <div
-        class="rounded-circle d-flex align-items-center justify-content-center me-3"
-        style="width: 56px; height: 56px;"
-        [ngClass]="{
-          'bg-white': colorEstado === 'default',
-          'bg-info': colorEstado === 'hombre',
-          'bg-pink': colorEstado === 'mujer'
-        }"
-      >
-        <i class="dx-icon-runner fs-3"
-           [ngClass]="{
-             'text-dark': colorEstado === 'default',
-             'text-white': colorEstado !== 'default'
-           }"></i>
-      </div>
-      <div>
-        <h5 class="text-white fw-bold m-0">Hit Actual</h5>
-        <p class="text-white m-0">
-          <i class="dx-icon-user me-1"></i> {{ ultimoHit.genero | titlecase }} |
-          <i class="dx-icon-clock me-1"></i> {{ ultimoHit.edad }} años |
-          <i class="dx-icon-eyeopen me-1"></i> {{ ultimoHit.estadoAnimo | titlecase }}
-        </p>
-        <small class="px-2 py-1 rounded d-inline-block mt-1" [ngClass]="{
-          'bg-white': colorEstado === 'default',
-          'bg-info': colorEstado === 'hombre',
-          'bg-pink': colorEstado === 'mujer'
-        }">ID Registro: {{ ultimoHit.id }}</small>
-      </div>
-    </div>
-
-    <div class="mt-3 mt-md-0">
-      <span class="badge fs-6 border border-light shadow-sm" [ngClass]="{
-          'bg-white': colorEstado === 'default',
-          'bg-info': colorEstado === 'hombre',
-          'bg-pink': colorEstado === 'mujer'
-        }">
-        {{ formatearFecha(ultimoHit) }}
-      </span>
-    </div>
-  </div>
-</div>
-
-
+          <div class="bg-gradient border-start border-5 rounded shadow-lg mb-4 p-4" [ngClass]="{
+            'border-white': colorEstado === 'default',
+            'border-info': colorEstado === 'hombre',
+            'border-pink': colorEstado === 'mujer'
+          }" *ngIf="ultimoHit">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+              <div class="d-flex align-items-center">
+                <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                  style="width: 56px; height: 56px;" [ngClass]="{
+                  'bg-white': colorEstado === 'default',
+                  'bg-info': colorEstado === 'hombre',
+                  'bg-pink': colorEstado === 'mujer'
+                }">
+                  <i class="dx-icon-runner fs-3"
+                    [ngClass]="{ 'text-dark': colorEstado === 'default', 'text-white': colorEstado !== 'default' }"></i>
+                </div>
+                <div>
+                  <h5 class="text-white fw-bold m-0">Hit Actual</h5>
+                  <p class="text-white m-0">
+                    <i class="dx-icon-user me-1"></i> {{ ultimoHit.genero | titlecase }} |
+                    <i class="dx-icon-clock me-1"></i> {{ ultimoHit.edad }} años |
+                    <i class="dx-icon-eyeopen me-1"></i> {{ ultimoHit.estadoAnimo | titlecase }}
+                  </p>
+                  <small class="px-2 py-1 rounded d-inline-block mt-1" [ngClass]="{
+                    'bg-white': colorEstado === 'default',
+                    'bg-info': colorEstado === 'hombre',
+                    'bg-pink': colorEstado === 'mujer'
+                  }">ID Registro: {{ ultimoHit.id }}
+                  </small>
+                </div>
+              </div>
+              <div class="mt-3 mt-md-0">
+                <span class="badge fs-6 border border-light shadow-sm" [ngClass]="{
+                  'bg-white': colorEstado === 'default',
+                  'bg-info': colorEstado === 'hombre',
+                  'bg-pink': colorEstado === 'mujer'
+                }">
+                  {{ formatearFecha(ultimoHit) }}
+                </span>
+              </div>
+            </div>
+          </div>
 
           <div class="row text-center">
             <div class="d-flex justify-content-md-end justify-content-start flex-wrap gap-3 mb-3 w-100">
               <div class="d-flex flex-column" *ngIf="buttonsFecha" [@fadeInUp]>
                 <label class="text-white mb-1">Fecha Inicio:</label>
                 <dx-date-box type="date" [(value)]="fechaInicio" [width]="200" [displayFormat]="'dd-MMM-yyyy'"
-                  [inputAttr]="{ 'aria-label': 'Fecha Inicio' }"
-                  (onValueChanged)="onFechaChange($event, 'start')">
+                  [inputAttr]="{ 'aria-label': 'Fecha Inicio' }" (onValueChanged)="onFechaChange($event, 'start')">
                 </dx-date-box>
               </div>
 
               <div class="d-flex flex-column" *ngIf="buttonsFecha" [@fadeInUp]>
                 <label class="text-white mb-1">Fecha Fin:</label>
                 <dx-date-box type="date" [(value)]="fechaFin" [width]="200" [displayFormat]="'dd-MMM-yyyy'"
-                  [inputAttr]="{ 'aria-label': 'Fecha Fin' }"
-                  (onValueChanged)="onFechaChange($event, 'end')">
+                  [inputAttr]="{ 'aria-label': 'Fecha Fin' }" (onValueChanged)="onFechaChange($event, 'end')">
                 </dx-date-box>
               </div>
 
@@ -147,27 +133,22 @@
                   <dxo-export [enabled]="true"></dxo-export>
                   <dxo-legend [margin]="0" horizontalAlignment="center" verticalAlignment="bottom"></dxo-legend>
                   <dxi-series argumentField="etiqueta" valueField="value"></dxi-series>
-                  <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeEdadHombresTooltip">
-                  </dxo-tooltip>
+                  <dxo-tooltip [enabled]="true" [customizeTooltip]="customizeEdadHombresTooltip"></dxo-tooltip>
                 </dx-pie-chart>
               </div>
             </div>
           </div>
-
           <div class="row text-left mt-5">
             <div class="col-12 col-sm-12 col-lg-12 mb-3">
               <div class="bg-dark rounded p-4 shadow-sm mb-4">
                 <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
                   <h4 class="text-white mb-2 mb-md-0">Conteo de Hits por Hora</h4>
                 </div>
-
                 <dx-chart [dataSource]="distribucionPorHora" id="chart">
                   <dxo-common-series-settings argumentField="hora" type="stackedBar"></dxo-common-series-settings>
-
                   <dxi-series valueField="hombre" name="Hombres" color="#4a90e2">
                     <dxo-label [visible]="true" [customizeText]="customizeLabelText"></dxo-label>
                   </dxi-series>
-
                   <dxi-series valueField="mujer" name="Mujeres" color="#ff69b4">
                     <dxo-label [visible]="true" [customizeText]="customizeLabelText"></dxo-label>
                   </dxi-series>
@@ -181,70 +162,77 @@
                 </dx-chart>
               </div>
             </div>
-          </div>          
+          </div>
 
           <div class="row text-left mt-5">
             <div class="col-12 col-sm-12 col-lg-12 mb-3">
               <div class="bg-dark rounded p-4 shadow-sm mb-4">
                 <h1 class="text-white fs-4 m-0">Registro de Incidencias</h1>
-
-                <dx-data-grid
-                  id="gridContainer"
-                  [columnHidingEnabled]="true"
-                  [showBorders]="true"
-                  [showColumnLines]="true"
-                  [showRowLines]="true"
-                  [rowAlternationEnabled]="true"
-                  [dataSource]="informacionGrid"
-                  [keyExpr]="'id'"
-                  [width]="'100%'"
-                  [groupPanel]="{ visible: true }"
-                  [allowColumnReordering]="true"
-                  (onOptionChanged)="manejarCambioOpciones($event)"
-                  (onContentReady)="actualizarTotalFiltrado($event)"
-                  (onExporting)="onExporting($event)"
-                >
-                  <dxo-search-panel [visible]="true" [width]="200" placeholder="Buscar..."></dxo-search-panel>
-                  <dxo-paging [pageSize]="10"></dxo-paging>
-                  <dxo-pager
-                    [showPageSizeSelector]="true"
-                    [allowedPageSizes]="[10, 20, 50, 100, 200]"
-                    [showInfo]="true"
-                  ></dxo-pager>
+                <dx-data-grid #gridContainer id="gridContainer" [columnHidingEnabled]="true" [showBorders]="'true'"
+                  [showColumnLines]="true" [showRowLines]="true" [rowAlternationEnabled]="'true'" (onPageIndexChanged)="onPageIndexChanged($event)"
+                  [dataSource]="dataSource" [width]="'100%'" (onContentReady)="actualizarTotalFiltrado($event)"
+                  [remoteOperations]="{ paging: true, sorting: true, filtering: true, grouping: false }"
+                  [allowColumnReordering]="true" [paging]="{ pageSize: pageSize }" [pager]="{ 
+                showPageSizeSelector: true, 
+                allowedPageSizes: [20], 
+                showInfo: true,
+                infoText: 'Página {0} de {1}', 
+                visible: true 
+              }" (onPageIndexChanged)="onPageIndexChanged($event)" (onExporting)="onExporting($event)">
+                  <dxo-search-panel [visible]="true" [width]="200"
+                    placeholder="Búsqueda Inteligente"></dxo-search-panel>
                   <dxo-group-panel [emptyPanelText]="mensajeAgrupar" [visible]="true"></dxo-group-panel>
                   <dxo-filter-row [visible]="showFilterRow"></dxo-filter-row>
                   <dxo-header-filter [visible]="showHeaderFilter"></dxo-header-filter>
-                  <dxo-grouping [autoExpandAll]="false"></dxo-grouping>
-
-                  <dxi-column dataField="genero" caption="Género" alignment="center" [calculateCellValue]="capitalizarGenero"></dxi-column>
-                  <dxi-column dataField="edad" caption="Edad" alignment="center" cellTemplate="eda">
-                    <div *dxTemplate="let or of 'eda' ">{{ or.data.edad + ' Años' }}</div>
+                  <dxi-column dataField="id" caption="Id" alignment="center"></dxi-column>
+                  <dxi-column dataField="genero" caption="Género" alignment="center" cellTemplate="generoTpl">
                   </dxi-column>
-                  <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center" cellTemplate="estAnim">
-                    <div *dxTemplate="let t of 'estAnim' ">{{ t.data.estadoAnimo | titlecase }}</div>
+                  <div *dxTemplate="let d of 'generoTpl'">
+                    <span [ngStyle]="{
+                        'background': d.data.genero === 'mujer' ? '#ff69b4' : (d.data.genero === 'hombre' ? '#4a90e2' : '#757575'),
+                        'color': '#fff',
+                        'padding': '4px 14px',
+                        'border-radius': '14px',
+                        'display': 'inline-block',
+                        'min-width': '60px',
+                        'text-align': 'center'
+                      }">
+                      {{ capitalizarGenero(d.data) }}
+                    </span>
+                  </div>
+                  <dxi-column dataField="edad" caption="Edad" alignment="center"></dxi-column>
+                  <dxi-column dataField="estadoAnimo" caption="Estado de Ánimo" alignment="center"
+                    cellTemplate="estadoAnimoTpl"> </dxi-column>
+                  <div *dxTemplate="let d of 'estadoAnimoTpl'">
+                    <span [ngStyle]="{
+                  'background': getColorEstadoAnimo(d.data.estadoAnimo),
+                  'color': '#fff',
+                  'padding': '4px 14px',
+                  'border-radius': '14px',
+                  'display': 'inline-block',
+                  'min-width': '60px',
+                  'text-align': 'center'
+                }">
+                      {{ d.data.estadoAnimo | titlecase }}
+                    </span>
+                  </div>
+                  <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center" dataType="datetime"
+                    [format]="'yyyy-MM-dd HH:mm:ss'" [filterOperations]="['=', '<', '>', '<=', '>=', 'between']">
                   </dxi-column>
-                  <dxi-column dataField="fecha" caption="Fecha y Hora" alignment="center" [calculateCellValue]="formatearFecha"></dxi-column>
-                  <dxi-column dataField="id" caption="ID" alignment="center" [width]="200"></dxi-column>
-
-                  <dxo-summary>
-                    <dxi-group-item column="id" summaryType="count" displayFormat="Total: {0}"></dxi-group-item>
-                    <dxi-group-item column="id" summaryType="count" displayFormat="Total: {0}" [showInGroupFooter]="true"></dxi-group-item>
-                  </dxo-summary>
-
-                  <dxo-export
-                    [enabled]="true"
-                    [allowExportSelectedData]="false"
-                    [texts]="{ exportAll: 'Exportar todos los datos a Excel' }"
-                  ></dxo-export>
+                  <dxo-paging [pageSize]="pageSize"></dxo-paging>
+                  <dxo-pager [showPageSizeSelector]="true" [showInfo]="true" [allowedPageSizes]="[20]"
+                    [infoText]="'Página {0} de {1}'" [visible]="true">
+                  </dxo-pager>
+                  <dxo-export [enabled]="true" [allowExportSelectedData]="false"
+                    [texts]="{ exportAll: 'Exportar todos los datos a Excel' }">
+                  </dxo-export>
                 </dx-data-grid>
-
                 <div class="text-start mt-4 ps-3">
                   <strong class="total-filtrado-label">Total: {{ totalFiltrado }}</strong>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
     </div>
